@@ -1,7 +1,7 @@
 # hasp
 
 ## How to run
-You need (Stack)[https://docs.haskellstack.org/en/stable/] to run this project.
+You need [Stack](https://docs.haskellstack.org/en/stable/) to run this project.
 
 You can then start a repl with by running the following command in the root directory:
 `stack build && stack exec hasp`
@@ -9,11 +9,11 @@ You can then start a repl with by running the following command in the root dire
 ## Functionality
 Hasp has the following builtin words:
 
-- basic operators: `+`, `-`, `*`
-- boolean operators: `and`, `or`
-- mathematical comparison operators: `<`, `>`, `==`
-- list functions: `list`, `empty?`, `cons`, `car`, `cdr`
-- program control functions: `if`, `begin`, `define`, `let`, `lambda`
+- basic operators: `+` `-` `*`
+- boolean operators: `and` `or`
+- mathematical comparison operators: `<` `>` `==`
+- list functions: `list` `empty?` `cons` `car` `cdr`
+- program control functions: `if` `begin` `define` `let` `lambda`
 
 Hasp support integers, strings, boolean, functions, and lists.  
 
