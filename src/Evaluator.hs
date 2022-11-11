@@ -7,40 +7,11 @@ import Expression
 import Lexer
 import Parser
 
-
-
-{-
-TODO∷
-- lambdas
-- cons
-- error handling
-  - wrong num args
-  - div by 0
--}
-
 eval :: Expression -> Expression
 eval expression = snd $ eval' Map.empty expression
 
-unwrapNumber (Number x) = x
-unwrapBoolean (Boolean x) = x
 
-numericFold env f acc args = let evaluatedArgs = map (\x -> unwrapNumber $ snd $ eval' env x) args
-                                 result = foldl' f acc evaluatedArgs
-                             in (env, Number result)
-
-applyToList env arg emptyCase nonEmptyCase = let list = snd $ eval' env arg
-                                             in case list of
-                                                (DataList (x:xs)) -> nonEmptyCase x xs
-                                                (DataList []) -> emptyCase
-                                                _ -> Error "Cannot apply list function to an expression that isn't a list"
-
-applyBinary :: (Map.Map String Expression) -> (a -> a -> b) -> (Expression -> a) -> (b -> Expression) -> Expression -> Expression -> ((Map.Map String Expression), Expression)
-applyBinary env f unwrap wrap x y = let evaluatedX = unwrap $ snd $ eval' env x
-                                        evaluatedY = unwrap $ snd $ eval' env y
-                                        result = f evaluatedX evaluatedY
-                                    in (env, wrap result)
-
-eval' :: (Map.Map String Expression) -> Expression -> ((Map.Map String Expression), Expression)
+eval' :: Environment -> Expression -> (Environment, Expression)
 eval' env (Number x) = (env, Number x)
 eval' env (Boolean x) = (env, Boolean x)
 
@@ -100,11 +71,38 @@ eval' env (Atom x) = case (Map.lookup x env) of
 
 eval' env _ = (env, Error "Could not evaluate program")
 
+
+unwrapBoolean :: Expression -> Bool
+unwrapNumber (Number x) = x
+
+unwrapNumber :: Expression -> Int
+unwrapBoolean (Boolean x) = x
+
+numericFold :: Environment -> (Int -> Int -> Int) -> Int -> [Expression] -> (Environment, Expression)
+numericFold env f acc args = let evaluatedArgs = map (\x -> unwrapNumber $ snd $ eval' env x) args
+                                 result = foldl' f acc evaluatedArgs
+                             in (env, Number result)
+
+applyToList :: Environment -> Expression -> Expression -> (Expression -> [Expression] -> Expression) -> Expression
+applyToList env arg emptyCase nonEmptyCase = let list = snd $ eval' env arg
+                                             in case list of
+                                                (DataList (x:xs)) -> nonEmptyCase x xs
+                                                (DataList []) -> emptyCase
+                                                _ -> Error "Cannot apply list function to an expression that isn't a list"
+
+applyBinary :: (Map.Map String Expression) -> (a -> a -> b) -> (Expression -> a) -> (b -> Expression) -> Expression -> Expression -> ((Map.Map String Expression), Expression)
+applyBinary env f unwrap wrap x y = let evaluatedX = unwrap $ snd $ eval' env x
+                                        evaluatedY = unwrap $ snd $ eval' env y
+                                        result = f evaluatedX evaluatedY
+                                    in (env, wrap result)
+
+pair :: [b] -> [(b, b)]
 pair list = pair' list [] where
       pair' [] pairs = pairs
       pair' (x:y:rest) pairs = pair' rest (pairs++[(x,y)])
 
-addPairsToHashMap hashMap pairs = addPairsToHashMap' hashMap pairs where -- TODO should not unwrap atoms
+addPairsToHashMap :: Environment -> [(Expression, Expression)] -> Environment
+addPairsToHashMap hashMap pairs = addPairsToHashMap' hashMap pairs where
     addPairsToHashMap' hashMap [] = hashMap
     addPairsToHashMap' hashMap (((Atom name),expression):rest) = addPairsToHashMap' (Map.insert name expression hashMap) rest
     addPairsToHashMap' hashMap _ = Map.fromList [("NOT PAIRS", Number 0)]
