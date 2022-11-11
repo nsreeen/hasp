@@ -64,6 +64,10 @@ eval' env (List ((Atom "if"):condition:expression1:expression2:[])) = if unwrapB
                                                                       then (eval' env expression1)
                                                                       else (eval' env expression2)
 
+eval' env (List ((Atom "define"):(Atom name):expression:[])) = let value = snd $ eval' env expression
+                                                                   updatedEnv = Map.insert name value env
+                                                               in (updatedEnv, value)
+
 eval' env (List ((Atom "define"):(Atom name):(List parameters):body:[])) = let function = Function body parameters env
                                                                                updatedEnv = Map.insert name function env
                                                                            in (updatedEnv, function)

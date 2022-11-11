@@ -6,7 +6,6 @@ import Expression
 import Lexer
 import Parser
 
-
 lexerTest_emptyString = TestCase (assertEqual "tokenise ," ([]) (tokenise ""))
 lexerTest_expression = TestCase (assertEqual "tokenise (+ 1 (- 4 2))," (["(","+","1","(","-", "4", "2", ")", ")"]) (tokenise "(+ 1 (- 4 2))"))
 lexerTests = TestList [TestLabel "lexer_emptyString" lexerTest_emptyString,
@@ -41,6 +40,7 @@ interpreter_consEmptyList = TestCase (assertEqual "interpret (cons 1 (list))" (D
 interpreter_if = TestCase (assertEqual "interpret (if true 1 2)" (Number 1) (interpret "(if true 1 2)"))
 interpreter_let = TestCase (assertEqual "interpret (let (x 1 y 2) (+ 1 2))" (Number 3) (interpret "(let (x 1 y 2) (+ 1 2))"))
 interpreter_begin_define = TestCase (assertEqual "interpret (begin (define foo (x) (+ x 1)) (foo 3))" (Number 4) (interpret "(begin (define foo (x) (+ x 1)) (foo 3))"))
+interpreter_begin_defineVariable = TestCase (assertEqual "interpret (begin (define x 5) x)" (Number 5) (interpret "(begin (define x 5) x)"))
 interpreter_lambda = TestCase (assertEqual "interpret ((lambda (y) (+ y 2)) 40)" (Number 42) (interpret "((lambda (y) (+ y 2)) 40)"))
 interpreter_multiArgLambda = TestCase (assertEqual "interpret ((lambda (x y) (+ x y)) (1 2))" (Number 3) (interpret "((lambda (x y) (+ x y)) (1 2))"))
 
@@ -62,6 +62,7 @@ interpreterTests = TestList [TestLabel "interpreter_add " interpreter_add,
                              TestLabel "interpreter_if" interpreter_if,
                              TestLabel "interpreter_let" interpreter_let,
                              TestLabel "interpreter_begin_define" interpreter_begin_define,
+                             TestLabel "interpreter_begin_defineVariable" interpreter_begin_defineVariable,
                              TestLabel "interpreter_lambda" interpreter_lambda,
                              TestLabel "interpreter_multiArgLambda" interpreter_multiArgLambda]
 
