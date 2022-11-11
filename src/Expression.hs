@@ -1,11 +1,7 @@
 module Expression where
 
 import qualified Data.Map as Map
-import qualified Text.Read as TextRead
 
-type Body = Expression
-type Parameters = [Expression]
-type Environment = Map.Map String Expression
 data Expression = Atom String
                 | Number Int
                 | Boolean Bool
@@ -13,6 +9,10 @@ data Expression = Atom String
                 | Error String
                 | DataList [Expression]
                 | Function Body Parameters Environment
+
+type Body = Expression
+type Parameters = [Expression]
+type Environment = Map.Map String Expression
 
 instance Show Expression where
   show (Atom x) = x
